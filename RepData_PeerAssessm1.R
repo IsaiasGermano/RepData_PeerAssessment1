@@ -1,20 +1,12 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+#Load the data 
+install.packages("data.table")       # Install & load data.table
+library("data.table")
 
-
-## Loading and preprocessing the data
-
-```{r}
+#activityDF <- read.csv(file = paste0("activity.csv"))
 activityDF <- read.csv("activity.csv")
 
-```
+setDT(activityDF)
 
-## What is mean total number of steps taken per day?
-```{r}
 #Calculate the total number of steps taken per day
 if(!require(lubridate)){
     install.packages("lubridate")
@@ -37,12 +29,6 @@ hist(stepPerDay$sumSteps, xlab = 'Steps', main = 'Daily steps', col = 'green')
 meanPerDay <- round(mean(stepPerDay$sumSteps))
 medianPerDay <- median(stepPerDay$sumSteps)
 
-```
-
-
-## What is the average daily activity pattern?
-
-```{r}
 #Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) 
 # and the average number of steps taken, averaged across all days (y-axis)
 
@@ -53,11 +39,6 @@ plot(stepsPerInterval, type = "l", xlab = "5-minute interval", ylab = 'Average o
 #Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 maxStepNumber <- stepsPerInterval$interval[which.max(stepsPerInterval$averageSteps)]
 
-
-```
-
-## Imputing missing values
-```{r}
 #Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 activityNANumber <- colSums(is.na(activityDF))
 
@@ -74,11 +55,6 @@ hist(stepPerDayNoNA$sumSteps, xlab = 'Steps', main = 'Daily steps', col = 'green
 meanPerDay <- round(mean(stepPerDayNoNA$sumSteps))
 medianPerDay <- median(stepPerDayNoNA$sumSteps)
 
-```
-
-
-## Are there differences in activity patterns between weekdays and weekends?
-```{r}
 #Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 activityWithoutNAWeek <- activityWithoutNA
 activityWithoutNAWeek$day <- ifelse(weekdays(activityWithoutNAWeek$date) %in% c("Saturday", "Sunday", "sabado", "domingo"), "weekend", "weekday") 
@@ -99,5 +75,4 @@ activityWeekend <-  filter(activityWithoutNAWeek, activityWithoutNAWeek$day == '
 stepsPerIntervalWeekend <- activityWeekend %>% group_by(interval) %>% summarize(averageSteps = mean(steps, na.rm = TRUE))
 
 plot(stepsPerIntervalWeekend, type = "l", xlab = "5-minute interval", ylab = 'Average of steps', main = 'Steps by time interval (Weekend)')
-```
 
